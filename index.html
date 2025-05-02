@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+ <html lang="en">
+ 
+ <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>Document</title>
+     <link rel="stylesheet" href="style.css">
+ </head>
+ 
+ <body>
+     <div class="quiz-container">
+         <h1>🎯 Ultimate Quiz</h1>
+         <hr>
+ 
+         <div>
+             <div class="quiz-box">
+                 <p id="ques"></p>
+             </div>
+ 
+             <div class="options">
+                <input onclick="btnWork()" type="radio" name="quiz" id="radio1" value="1">
+                <label class="option" id="opt1" for="radio1"></label>
+              </div>
+              
+              <div class="options">
+                <input onclick="btnWork()" type="radio" name="quiz" id="radio2" value="2">
+                <label class="option" id="opt2" for="radio2"></label>
+              </div>
+              
+              <div class="options">
+                <input onclick="btnWork()" type="radio" name="quiz" id="radio3" value="3">
+                <label class="option" id="opt3" for="radio3"></label>
+              </div>
+              
+         </div>
+         <br><br>
+ 
+         <button class="next-btn" id="btn" disabled onclick="nextQuestion()">Next</button>
+         
+         <div id="timer"></div>
+    </div>
+ 
+ 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="script.js"></script>
+ </body>
+ 
+ </html>
