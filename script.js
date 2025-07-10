@@ -1,74 +1,52 @@
-var questions = [
-    {
-        question: "What does HTML stand for?",
-        option1: "Hyperlinks and Text Markup Language",
-        option2: "Hypertext Markup Language",
-        option3: "Home Tool Markup Language",
-        correctOption: "Hypertext Markup Language",
-    },
-    {
-        question: "Who is making the Web standards?",
-        option1: "Google",
-        option2: "The World Wide Web Consortium",
-        option3: "Microsoft",
-        correctOption: "The World Wide Web Consortium",
-    },
-    {
-        question: "Choose the correct HTML element for the largest heading:",
-        option1: "<heading>",
-        option2: "<h6>",
-        option3: "<h1>",
-        correctOption: "<h1>",
-    },
-    {
-        question: "What is the correct HTML element for inserting a line break?",
-        option1: "<linebreak>",
-        option2: "<br>",
-        option3: "<break>",
-        correctOption: "<br>",
-    },
-    {
-        question: "What is the correct HTML for adding a background color?",
-        option1: '<body bg="yellow">',
-        option2: "<background>yellow</background>",
-        option3: '<body style="background-color:yellow;">',
-        correctOption: '<body style="background-color:yellow;">',
-    },
-    {
-        question: "Choose the correct HTML element to define important text:",
-        option1: "<strong>",
-        option2: "<b>",
-        option3: "<i>",
-        correctOption: "<strong>",
-    },
-    {
-        question: "Choose the correct HTML element to define emphasized text:",
-        option1: "<italic>",
-        option2: "<i>",
-        option3: "<em>",
-        correctOption: "<em>",
-    },
-    {
-        question: "What is the correct HTML for creating a hyperlink?",
-        option1: "<a>http://www.w3schools.com</a>",
-        option2: '<a href="http://www.w3schools.com">W3Schools</a>',
-        option3: '<a url="http://www.w3schools.com">W3Schools.com</a>',
-        correctOption: '<a href="http://www.w3schools.com">W3Schools</a>',
-    },
-];
 var htmlques = document.getElementById('ques');
 var htmlopt1 = document.getElementById('opt1');
 var htmlopt2 = document.getElementById('opt2');
 var htmlopt3 = document.getElementById('opt3');
-var count_down = 60
-var timer = document.getElementById("timer")
-var interval;
-
+var timer = document.getElementById("timer");
 var getBtn = document.getElementById('btn');
+
+var count_down = 60;
+var interval;
 var index = 0;
 var score = 0;
+var questions = [];
+
+function startQuizApp() {
+    fetch("https://the-trivia-api.com/v2/questions")
+        .then(function (res) {
+            return res.json();
+        })
+        .then(function (data) {
+            questions = data.map(function (item) {
+                // 1. Shuffle incorrect answers
+                let incorrect = item.incorrectAnswers.sort();
+
+                // 2. Pick 2 random incorrect
+                let selectedIncorrect = incorrect.slice(0, 2);
+
+                // 3. Add correct answer
+                let options = [...selectedIncorrect, item.correctAnswer];
+
+                // 4. Shuffle all 3 options
+                options = options.sort();
+
+                // 5. Return formatted question
+                return {
+                    question: item.question.text,
+                    option1: options[0],
+                    option2: options[1],
+                    option3: options[2],
+                    correctOption: item.correctAnswer
+                };
+            });
 
 
+    console.log(questions)
+
+    firstQuestion();
+    startTimer();
+});
+}
 
 function firstQuestion() {
     var q = questions[index];
@@ -89,22 +67,17 @@ function firstQuestion() {
     getBtn.disabled = true;
 }
 
-firstQuestion(); 
+function startTimer() {
+    interval = setInterval(function () {
+        count_down--;
+        timer.innerHTML = count_down;
 
-function starttimer(){
-    interval = setInterval(function(){
-        count_down--
-
-        timer.innerHTML = count_down
-
-        if(count_down === 0){
-            clearInterval(interval)
-            showresult()
+        if (count_down === 0) {
+            clearInterval(interval);
+            showResult();
         }
-    },1000)
-
-}   
-starttimer()
+    }, 1000);
+}
 
 function btnWork() {
     getBtn.disabled = false;
@@ -122,29 +95,31 @@ function nextQuestion() {
     index++;
 
     if (index >= questions.length) {
-        showresult()
+        showResult();
     } else {
         firstQuestion();
     }
 }
 
-function showresult(){
+function showResult() {
     Swal.fire({
         title: "Quiz Completed!",
         text: `Your score is ${score} out of ${questions.length}`,
-        icon: "success",
-        restartquiz: "Restart Quiz"
+        icon: "success"
     });
-    
-    setTimeout(function(){
-        Restart()
+
+    setTimeout(function () {
+        restartQuiz();
     }, 2000);
 }
 
-function Restart(){
-    index=0
-    score=0
-    count_down=60
-    starttimer()
-    firstQuestion()
+function restartQuiz() {
+    index = 0;
+    score = 0;
+    count_down = 60;
+    clearInterval(interval);
+    startQuizApp();
 }
+
+// Start the quiz app when page loads
+startQuizApp();
